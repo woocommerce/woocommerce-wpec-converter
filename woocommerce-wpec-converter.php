@@ -11,6 +11,17 @@ License: GPL version 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2
 */
 
 /**
+ * Plugin updates
+ * */
+if (is_admin()) {
+	if ( ! class_exists( 'WooThemes_Plugin_Updater' ) ) require_once( 'woo-updater/plugin-updater.class.php' );
+	
+	$woo_plugin_updater_wpec_converter = new WooThemes_Plugin_Updater( __FILE__ );
+	$woo_plugin_updater_wpec_converter->api_key = '';
+	$woo_plugin_updater_wpec_converter->init();
+}
+
+/**
  * Check if WooCommerce is active
  **/
 if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) )
