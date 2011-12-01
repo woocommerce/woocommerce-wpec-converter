@@ -17,7 +17,7 @@ if (is_admin()) {
 	if ( ! class_exists( 'WooThemes_Plugin_Updater' ) ) require_once( 'woo-updater/plugin-updater.class.php' );
 	
 	$woo_plugin_updater_wpec_converter = new WooThemes_Plugin_Updater( __FILE__ );
-	$woo_plugin_updater_wpec_converter->api_key = '';
+	$woo_plugin_updater_wpec_converter->api_key = 'd45cb2cf6c295481d813ef96654bb4af';
 	$woo_plugin_updater_wpec_converter->init();
 }
 
