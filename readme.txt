@@ -24,9 +24,15 @@ See http://www.woothemes.com/extension/
 
 == Usage ==
 
-1. Open Tools > Import > WP E-Commerce To WooCommerce Converter
+1. Follow the installation steps above
 
-2. Click 'Convert Now' button
+2. De-activate WP E-Commerce
+
+3. Activate WooCommerce
+
+4. Open Tools > Import > WP E-Commerce To WooCommerce Converter
+
+5. Click 'Convert Now' button
 
 That's it!
 
