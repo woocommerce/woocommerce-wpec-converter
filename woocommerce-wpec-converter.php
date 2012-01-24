@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: WooCommerce - WP E-Commerce Converter
-Plugin URI: http://www.woothemes.com/
+Plugin URI: http://www.woothemes.com/woocommerce
 Description: Convert products, product categories, and product variations from WP E-Commerce to WooCommerce.
 Author: Agus MU
 Author URI: http://agusmu.com/
-Version: 1.0
+Version: 1.1
 Text Domain: woo_wpec
 License: GPL version 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
@@ -106,7 +106,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 		if ( class_exists( 'WP_eCommerce' ) )
 		echo '<div class="error"><p>'.__('Please deactivate your WP E-Commerce plugin.', 'woo_wpec').'</p></div>';
 
-		echo '<p>'.__('Analyzing WP E-Commerce products&hellip;', 'woo_wpec').'</p>';
+		echo '<p>'.__('Analysing WP E-Commerce products&hellip;', 'woo_wpec').'</p>';
 		
 		echo '<ol>';
 
@@ -295,43 +295,43 @@ class Woo_WPEC_Converter extends WP_Importer {
 				
 				// regular_price
 				if ( isset($meta['_wpsc_price'][0]) ) {
-					update_post_meta( $id, 'regular_price', $meta['_wpsc_price'][0] );	
+					update_post_meta( $id, '_regular_price', $meta['_wpsc_price'][0] );	
 					delete_post_meta( $id, '_wpsc_price' );	
 				}
 				
 				// sale_price
 				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
-					update_post_meta( $id, 'sale_price', $meta['_wpsc_special_price'][0] );	
+					update_post_meta( $id, '_sale_price', $meta['_wpsc_special_price'][0] );	
 					delete_post_meta( $id, '_wpsc_special_price' );	
 				}
 				
 				// price (regular_price/sale_price)
 				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
-					update_post_meta( $id, 'price', $meta['_wpsc_special_price'][0] );	
+					update_post_meta( $id, '_price', $meta['_wpsc_special_price'][0] );	
 				}
 				else {
-					update_post_meta( $id, 'price', $meta['_wpsc_price'][0] );	
+					update_post_meta( $id, '_price', $meta['_wpsc_price'][0] );	
 				}
 				
 				// sale_price_dates_from
-				update_post_meta( $id, 'sale_price_dates_from', '' );	
+				update_post_meta( $id, '_sale_price_dates_from', '' );	
 				
 				// sale_price_dates_to
-				update_post_meta( $id, 'sale_price_dates_to', '' );	
+				update_post_meta( $id, '_sale_price_dates_to', '' );	
 				
 				// visibility: visible
-				update_post_meta( $id, 'visibility', 'visible' );
+				update_post_meta( $id, '_visibility', 'visible' );
 				
 				// featured: yes / no
 				$featured_ids = get_option( 'sticky_products' );
 				if ( !is_array($featured_ids) )
 					$featured_ids = array($featured_ids);
 				$featured = ( in_array( $id, $featured_ids ) ) ? 'yes' : 'no';
-				update_post_meta( $id, 'featured', $featured );	
+				update_post_meta( $id, '_featured', $featured );	
 				
 				// sku: 
 				if ( isset($meta['_wpsc_sku'][0]) ) {
-					update_post_meta( $id, 'sku', $meta['_wpsc_sku'][0] );	
+					update_post_meta( $id, '_sku', $meta['_wpsc_sku'][0] );	
 					delete_post_meta( $id, '_wpsc_sku' );	
 				}
 				
@@ -341,27 +341,27 @@ class Woo_WPEC_Converter extends WP_Importer {
 				// backorders : no
 				if ( isset($meta['_wpsc_stock'][0]) ) {
 					if ( $meta['_wpsc_stock'][0] === '' ) {
-						update_post_meta( $id, 'stock_status', 'instock' );	
-						update_post_meta( $id, 'manage_stock', 'no' );
-						update_post_meta( $id, 'stock', '0' );
-						update_post_meta( $id, 'backorders', 'no' );
+						update_post_meta( $id, '_stock_status', 'instock' );	
+						update_post_meta( $id, '_manage_stock', 'no' );
+						update_post_meta( $id, '_stock', '0' );
+						update_post_meta( $id, '_backorders', 'no' );
 					}
 					elseif ( $meta['_wpsc_stock'][0] === '0' ) {
-						update_post_meta( $id, 'stock_status', 'outofstock' );	
-						update_post_meta( $id, 'manage_stock', 'yes' );
-						update_post_meta( $id, 'stock', '0' );
-						update_post_meta( $id, 'backorders', 'no' );
+						update_post_meta( $id, '_stock_status', 'outofstock' );	
+						update_post_meta( $id, '_manage_stock', 'yes' );
+						update_post_meta( $id, '_stock', '0' );
+						update_post_meta( $id, '_backorders', 'no' );
 					}
 					elseif ( $meta['_wpsc_stock'][0] > 0 ) {
-						update_post_meta( $id, 'stock_status', 'instock' );	
-						update_post_meta( $id, 'manage_stock', 'yes' );
-						update_post_meta( $id, 'stock', $meta['_wpsc_stock'][0] );
-						update_post_meta( $id, 'backorders', 'no' );
+						update_post_meta( $id, '_stock_status', 'instock' );	
+						update_post_meta( $id, '_manage_stock', 'yes' );
+						update_post_meta( $id, '_stock', $meta['_wpsc_stock'][0] );
+						update_post_meta( $id, '_backorders', 'no' );
 					}
 				}
 
 				// virtual (yes/no)
-				update_post_meta( $id, 'virtual', 'no' );	
+				update_post_meta( $id, '_virtual', 'no' );	
 				
 				// downloadable (yes/no)
 				// file_path (downloadable)
@@ -373,8 +373,8 @@ class Woo_WPEC_Converter extends WP_Importer {
 				);
 				$downloads = (array)get_posts($args);
 				if ( count( $downloads ) ) {
-					update_post_meta( $id, 'downloadable', 'yes' );	
-					update_post_meta( $id, 'file_path', $downloads[0]->guid );
+					update_post_meta( $id, '_downloadable', 'yes' );	
+					update_post_meta( $id, '_file_path', $downloads[0]->guid );
 				}
 				
 				// weight
@@ -382,7 +382,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 					$old_weight = $meta_data['weight'];
 					$old_weight_unit = $meta_data['weight_unit'];
 					$new_weight = $this->convert_weight($old_weight, $old_weight_unit, $weight_unit);
-					update_post_meta( $id, 'weight', $new_weight );
+					update_post_meta( $id, '_weight', $new_weight );
 				}
 
 				// length
@@ -390,7 +390,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 					$old_length = $meta_data['dimensions']['length'];
 					$old_length_unit = $meta_data['dimensions']['length_unit'];
 					$new_length = $this->convert_dimension($old_length, $old_length_unit, $dimension_unit);
-					update_post_meta( $id, 'length', $new_length );
+					update_post_meta( $id, '_length', $new_length );
 				}
 				
 				// width
@@ -398,7 +398,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 					$old_width = $meta_data['dimensions']['width'];
 					$old_width_unit = $meta_data['dimensions']['width_unit'];
 					$new_width = $this->convert_dimension($old_width, $old_width_unit, $dimension_unit);
-					update_post_meta( $id, 'width', $new_width );
+					update_post_meta( $id, '_width', $new_width );
 				}
 
 				// height
@@ -406,14 +406,14 @@ class Woo_WPEC_Converter extends WP_Importer {
 					$old_height = $meta_data['dimensions']['height'];
 					$old_height_unit = $meta_data['dimensions']['height_unit'];
 					$new_height = $this->convert_dimension($old_height, $old_height_unit, $dimension_unit);
-					update_post_meta( $id, 'height', $new_height );
+					update_post_meta( $id, '_height', $new_height );
 				}
 
 				// tax_status
-				update_post_meta( $id, 'tax_status', 'taxable' );	
+				update_post_meta( $id, '_tax_status', 'taxable' );	
 				
 				// tax_class
-				update_post_meta( $id, 'tax_class', '' );	
+				update_post_meta( $id, '_tax_class', '' );	
 
 				// per_product_shipping
 				if ( $product_type == 'simple' || $product_type == 'variable' ) {
@@ -475,13 +475,13 @@ class Woo_WPEC_Converter extends WP_Importer {
 				
 				// price
 				if ( isset($meta['_wpsc_price'][0]) ) {
-					update_post_meta( $id, 'price', $meta['_wpsc_price'][0] );	
+					update_post_meta( $id, '_price', $meta['_wpsc_price'][0] );	
 					delete_post_meta( $id, '_wpsc_price' );	
 				}
 				
 				// sale_price
 				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
-					update_post_meta( $id, 'sale_price', $meta['_wpsc_special_price'][0] );	
+					update_post_meta( $id, '_sale_price', $meta['_wpsc_special_price'][0] );	
 					delete_post_meta( $id, '_wpsc_special_price' );	
 				}
 				
@@ -490,32 +490,32 @@ class Woo_WPEC_Converter extends WP_Importer {
 					$old_weight = $meta_data['weight'];
 					$old_weight_unit = $meta_data['weight_unit'];
 					$new_weight = $this->convert_weight($old_weight, $old_weight_unit, $weight_unit);
-					update_post_meta( $id, 'weight', $new_weight );
+					update_post_meta( $id, '_weight', $new_weight );
 				}
 				
 				// stock
 				if ( isset($meta['_wpsc_stock'][0]) ) {
-					update_post_meta( $id, 'stock', $meta['_wpsc_stock'][0] );	
+					update_post_meta( $id, '_stock', $meta['_wpsc_stock'][0] );	
 					delete_post_meta( $id, '_wpsc_stock' );	
 				}
 				
 				// sku
 				if ( isset($meta['_wpsc_sku'][0]) ) {
-					update_post_meta( $id, 'sku', $meta['_wpsc_sku'][0] );	
+					update_post_meta( $id, '_sku', $meta['_wpsc_sku'][0] );	
 					delete_post_meta( $id, '_wpsc_sku' );	
 				}
 
 				// virtual
-				update_post_meta( $id, 'virtual', 'no' );
+				update_post_meta( $id, '_virtual', 'no' );
 
 				// downloadable
-				update_post_meta( $id, 'downloadable', 'no' );
+				update_post_meta( $id, '_downloadable', 'no' );
 
 				// download_limit
-				update_post_meta( $id, 'download_limit', '' );
+				update_post_meta( $id, '_download_limit', '' );
 
 				// file_path
-				update_post_meta( $id, 'file_path', '' );
+				update_post_meta( $id, '_file_path', '' );
 
 				// get product attributes in array
 				$attribute_taxonomies = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."woocommerce_attribute_taxonomies;");
@@ -586,7 +586,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 						$values = explode(",", $attribute['value']);
 					}
 					wp_set_object_terms( $parent_id, 'variable', 'product_type');
-					update_post_meta( $parent_id, 'product_attributes', $new_attributes );	
+					update_post_meta( $parent_id, '_product_attributes', $new_attributes );	
 				}
 				
 				// convert post type and mark it converted
