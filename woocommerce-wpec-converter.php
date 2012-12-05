@@ -19,7 +19,7 @@ if ( ! function_exists( 'woothemes_queue_update' ) )
 /**
  * Plugin updates
  */
-woothemes_queue_update( plugin_basename( __FILE__ ), 'XXX', 'XXX' );
+woothemes_queue_update( plugin_basename( __FILE__ ), '25fd8a5bcfc78fde45cdfaebfa8b6f14', '19002' );
 
 /**
  * Check if WooCommerce is active
