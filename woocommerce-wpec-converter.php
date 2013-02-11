@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: WooCommerce - WP E-Commerce Converter
+Plugin Name: WooCommerce - WP E-Commerce -> WooCommerce Converter
 Plugin URI: http://www.woothemes.com/woocommerce
 Description: Convert products, product categories, and product variations from WP E-Commerce to WooCommerce.
 Author: WooThemes
