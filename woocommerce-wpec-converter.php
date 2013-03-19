@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: WooCommerce - WP E-Commerce Converter
+Plugin Name: WooCommerce - WP E-Commerce -> WooCommerce Converter
 Plugin URI: http://www.woothemes.com/woocommerce
 Description: Convert products, product categories, and product variations from WP E-Commerce to WooCommerce.
-Author: Agus MU
-Author URI: http://agusmu.com/
-Version: 1.1.1
+Author: WooThemes
+Author URI: http://woothemes.com/
+Version: 1.1.2
 Text Domain: woo_wpec
 License: GPL version 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
@@ -168,7 +168,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				$ids[] = $term->term_id;
 			}
 
-			$converted = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->term_taxonomy SET taxonomy = 'product_cat' WHERE taxonomy = 'wpsc_product_category'" ) );
+			$converted = $wpdb->query( "UPDATE $wpdb->term_taxonomy SET taxonomy = 'product_cat' WHERE taxonomy = 'wpsc_product_category'" );
 
 			if ( $converted > 0 ) {
 				clean_term_cache($ids, 'product_cat', true);
@@ -423,7 +423,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				}
 
 				// convert post type
-				$converted = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_type = 'product', comment_status = 'open' WHERE ID = '{$id}'" ) );
+				$converted = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_type = 'product', comment_status = 'open' WHERE ID = %d", $id ) );
 				if ( !is_wp_error($converted) ) {
 					$this->results++;
 					printf( '<p>'.__('<b>%s</b> product was converted', 'woo_wpec').'</p>', $title );
@@ -590,7 +590,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				}
 
 				// convert post type and mark it converted
-				$converted = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_type = 'product_variation', post_title = '$title', post_status = 'publish' WHERE ID = '{$id}'" ) );
+				$converted = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_type = 'product_variation', post_title = '%s', post_status = 'publish' WHERE ID = %d", $title, $id ) );
 				if ( !is_wp_error($converted) ) {
 					$this->results++;
 					printf( '<p>'.__('<b>%s</b> product variation was converted', 'woo_wpec').'</p>', $title );
