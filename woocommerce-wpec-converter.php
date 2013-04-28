@@ -5,7 +5,7 @@ Plugin URI: http://www.woothemes.com/woocommerce
 Description: Convert products, product categories, and product variations from WP E-Commerce to WooCommerce.
 Author: WooThemes
 Author URI: http://woothemes.com/
-Version: 1.1.3
+Version: 1.1.4
 Text Domain: woo_wpec
 License: GPL version 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
@@ -423,8 +423,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				}
 
 				// convert post type
-				$converted = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_type = 'product', comment_status = 'open' WHERE ID = %d", $id ) );
-				if ( !is_wp_error($converted) ) {
+				if ( set_post_type( $id, 'product' ) ) {
 					$this->results++;
 					printf( '<p>'.__('<b>%s</b> product was converted', 'woo_wpec').'</p>', $title );
 				}
