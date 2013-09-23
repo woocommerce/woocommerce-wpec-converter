@@ -1,5 +1,8 @@
 *** WooCommerce - WP E-Commerce Converter Changelog ***
 
+2013.09.23 - version 1.1.5
+ * Tweak - Add a featured image if not set
+
 2013.04.28 - version 1.1.4
  * Tweak - Use set_post_type() instead of $wpdb Object
 
