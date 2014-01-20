@@ -5,7 +5,7 @@ Plugin URI: http://www.woothemes.com/woocommerce
 Description: Convert products, product categories, and product variations from WP E-Commerce to WooCommerce.
 Author: WooThemes
 Author URI: http://woothemes.com/
-Version: 1.1.5
+Version: 1.1.6
 Text Domain: woo_wpec
 License: GPL version 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
@@ -209,7 +209,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 					$attribute_type = 'select';
 					$attribute_label = $attribute->name;
 
-					$attribute_taxonomy_name = $woocommerce->attribute_taxonomy_name($attribute_name);
+					$attribute_taxonomy_name = wc_attribute_taxonomy_name($attribute_name);
 
 					if ( $attribute_name && $attribute_type && !taxonomy_exists( $attribute_taxonomy_name ) ) {
 
@@ -709,7 +709,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				$attributes_name = array();
 				if ( $attribute_taxonomies ) :
 					foreach ($attribute_taxonomies as $tax) :
-						$attributes_name[] = $woocommerce->attribute_taxonomy_name($tax->attribute_name);
+						$attributes_name[] = wc_attribute_taxonomy_name($tax->attribute_name);
 					endforeach;
 				endif;
 
@@ -727,7 +727,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				$title = array();
 
 				foreach ($terms as $term) :
-					$title[] = $woocommerce->attribute_label($term->taxonomy).': '.$term->name;
+					$title[] = wc_attribute_taxonomy_name($term->taxonomy).': '.$term->name;
 				endforeach;
 
 				$sku_string = '#'.$id;

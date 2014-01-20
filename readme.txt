@@ -4,9 +4,9 @@
 
 Contributors: WooThemes
 Tags: e-commerce, shop, cart, woocommerce, product converter
-Requires at least: 3.6
-Tested up to: 3.6.1
-Stable tag: 1.1.5
+Requires at least: 3.8
+Tested up to: 3.8
+Stable tag: 1.1.6
 
 == Description ==
 
