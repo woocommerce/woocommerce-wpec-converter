@@ -1,5 +1,8 @@
 *** WooCommerce - WP E-Commerce Converter Changelog ***
 
+2014.01.23 - version 1.1.7
+ * wc_attribute_taxonomy_name fallback
+
 2014.01.20 - version 1.1.6
  * WC 2.1 Compat
 
