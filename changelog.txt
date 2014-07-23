@@ -1,7 +1,8 @@
 *** WooCommerce - WP E-Commerce Converter Changelog ***
 
-2014.nn.nn - version 1.1.8
- * using wc_format_decimal on all prices
+2014.07.23 - version 1.1.8
+ * Fix - Using _product_image_gallery product meta to add WPEC images to WC product galleries
+ * Fix - Using wc_format_decimal on all prices
 
 2014.01.23 - version 1.1.7
  * wc_attribute_taxonomy_name fallback

@@ -437,10 +437,13 @@ class Woo_WPEC_Converter extends WP_Importer {
 					}
 				}
 
+				// convert attached thumbnails to WooCommerce Product gallery
+				self::generate_product_gallery( $id );
+
 				// auto-generate thumbnail if one doesn't exist
 				if ( ! has_post_thumbnail( $id ) ) {
 					printf( '<p>'.__('Featured image does not exist. Auto-generating thumbnail for product.', 'woo_wpec').'</p>', $title );
-					self::generate_thumbmail($id);
+					self::generate_thumbmail( $id );
 				}
 
 				// convert post type
@@ -455,8 +458,34 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 	}
 
+	// Generate the WooCommerce Product Gallery
+	static function generate_product_gallery( $post_id ) {
+
+		global $wpdb;
+
+		$post = get_post( $post_id );
+
+		// reset post parent id
+		$post_parent_id = $post->post_parent === 0 ? $post->ID : $post->post_parent;
+
+		// get all images attachments from the post
+		$attachments = array_keys( get_children( array(
+			'post_parent'    => $post_parent_id,
+			'post_status'    => 'inherit',
+			'post_type'      => 'attachment',
+			'post_mime_type' => 'image',
+			'order'          => 'ASC',
+			'orderby'        => 'menu_order ID' )
+		));
+
+		// if we have at least one attachment update the post meta
+		if ( sizeof( $attachments ) > 0 ) {
+			update_post_meta( $post_id, '_product_image_gallery', implode( ',', $attachments ) );
+		}
+	}
+
 	// Generate Thumbnails for Product
-    static function generate_thumbmail( $post_id ) {
+	static function generate_thumbmail( $post_id ) {
 
 		global $wpdb;
 
