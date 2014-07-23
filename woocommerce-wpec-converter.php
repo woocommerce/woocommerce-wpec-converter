@@ -5,7 +5,7 @@ Plugin URI: http://www.woothemes.com/woocommerce
 Description: Convert products, product categories, and product variations from WP E-Commerce to WooCommerce.
 Author: WooThemes
 Author URI: http://woothemes.com/
-Version: 1.1.7
+Version: 1.1.8
 Text Domain: woo_wpec
 License: GPL version 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
