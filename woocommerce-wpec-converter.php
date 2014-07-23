@@ -300,22 +300,22 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 				// regular_price
 				if ( isset($meta['_wpsc_price'][0]) ) {
-					update_post_meta( $id, '_regular_price', $meta['_wpsc_price'][0] );
+					update_post_meta( $id, '_regular_price', wc_format_decimal( $meta['_wpsc_price'][0] ) );
 					delete_post_meta( $id, '_wpsc_price' );
 				}
 
 				// sale_price
 				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
-					update_post_meta( $id, '_sale_price', $meta['_wpsc_special_price'][0] );
+					update_post_meta( $id, '_sale_price', wc_format_decimal( $meta['_wpsc_special_price'][0] ) );
 					delete_post_meta( $id, '_wpsc_special_price' );
 				}
 
 				// price (regular_price/sale_price)
 				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
-					update_post_meta( $id, '_price', $meta['_wpsc_special_price'][0] );
+					update_post_meta( $id, '_price', wc_format_decimal( $meta['_wpsc_special_price'][0] ) );
 				}
 				else {
-					update_post_meta( $id, '_price', $meta['_wpsc_price'][0] );
+					update_post_meta( $id, '_price', wc_format_decimal( $meta['_wpsc_price'][0] ) );
 				}
 
 				// sale_price_dates_from
@@ -426,7 +426,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 						update_post_meta( $id, 'per_product_shipping', $meta_data['shipping']['local'] );
 					}
 				}
-				
+
 				// auto-generate thumbnail if one doesn't exist
 				if ( ! has_post_thumbnail( $id ) ) {
 					printf( '<p>'.__('Featured image does not exist. Auto-generating thumbnail for product.', 'woo_wpec').'</p>', $title );
@@ -444,10 +444,10 @@ class Woo_WPEC_Converter extends WP_Importer {
 		}
 
 	}
-	
+
 	// Generate Thumbnails for Product
     static function generate_thumbmail( $post_id ) {
-		
+
 		global $wpdb;
 
 		$post = get_post($dummy_wp = $post_id);
@@ -461,12 +461,12 @@ class Woo_WPEC_Converter extends WP_Importer {
 		// case 1: there is an image attachment we can use
 		// found all images attachments from the post
 		$attachments = array_values(get_children(array(
-			'post_parent' => $post_parent_id, 
-			'post_status' => 'inherit', 
-			'post_type' => 'attachment', 
-			'post_mime_type' => 'image', 
-			'order' => 'ASC', 
-			'orderby' => 'menu_order ID') 
+			'post_parent'    => $post_parent_id,
+			'post_status'    => 'inherit',
+			'post_type'      => 'attachment',
+			'post_mime_type' => 'image',
+			'order'          => 'ASC',
+			'orderby'        => 'menu_order ID')
 		));
 
 		// if attachment found, set the first attachment as thumbnail
@@ -493,49 +493,49 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 		return;
 	}
-	
+
     /**
-     * @return Integer if attachment id if attachment is used. 
+     * @return Integer if attachment id if attachment is used.
      * @return String if image url if external image is used.
      * @return NULL if fail
      */
     static function found_image_url($html)
     {
         $matches = array();
-        
+
         // images
         $pattern = '/<img[^>]*src=\"?(?<src>[^\"]*)\"?[^>]*>/im';
-        preg_match( $pattern, $html, $matches ); 
+        preg_match( $pattern, $html, $matches );
         if($matches['src']) {
             return $matches['src'];
         }
-        
+
         // youtube
         $pattern = "/(http:\/\/www.youtube.com\/watch\?.*v=|http:\/\/www.youtube-nocookie.com\/.*v\/|http:\/\/www.youtube.com\/embed\/|http:\/\/www.youtube.com\/v\/)(?<id>[\w-_]+)/i";
-        preg_match( $pattern, $html, $matches ); 
+        preg_match( $pattern, $html, $matches );
         if( $matches['id'] ) {
             return "http://img.youtube.com/vi/{$matches['id']}/0.jpg";
         }
-        
+
         // vimeo
         $pattern = "/(http:\/\/vimeo.com\/|http:\/\/player.vimeo.com\/video\/|http:\/\/vimeo.com\/moogaloop.swf?.*clip_id=)(?<id>[\d]+)/i";
-        preg_match( $pattern, $html, $matches ); 
+        preg_match( $pattern, $html, $matches );
         if( $vimeo_id = $matches['id'] ) {
             $hash = unserialize(file_get_contents("http://vimeo.com/api/v2/video/{$vimeo_id}.php"));
             return "{$hash[0]['thumbnail_medium']}";
         }
-        
+
         // dailymotion
         // http://www.dailymotion.com/thumbnail/150x150/video/xexakq
         $pattern = "/(http:\/\/www.dailymotion.com\/swf\/video\/)(?<id>[\w\d]+)/i";
-        preg_match( $pattern, $html, $matches ); 
+        preg_match( $pattern, $html, $matches );
         if( $matches['id'] ) {
             return "http://www.dailymotion.com/thumbnail/150x150/video/{$matches['id']}.jpg";
         }
-        
+
         return null;
     }
-    
+
     /**
      * Function to fetch the image from URL and generate the required thumbnails
      * @return Attachment ID
@@ -543,74 +543,74 @@ class Woo_WPEC_Converter extends WP_Importer {
     static function create_post_attachment_from_url($imageUrl = null)
     {
         if(is_null($imageUrl)) return null;
-        
+
         // get file name
         $filename = substr($imageUrl, (strrpos($imageUrl, '/'))+1);
         if (!(($uploads = wp_upload_dir(current_time('mysql')) ) && false === $uploads['error'])) {
             return null;
         }
-    
+
         // Generate unique file name
         $filename = wp_unique_filename( $uploads['path'], $filename );
-    
+
         // move the file to the uploads dir
         $new_file = $uploads['path'] . "/$filename";
-        
+
         // download file
         if (!ini_get('allow_url_fopen')) {
             $file_data = self::curl_get_file_contents($imageUrl);
         } else {
             $file_data = @file_get_contents($imageUrl);
         }
-        
+
         // fail to download image.
         if (!$file_data) {
             return null;
         }
-        
+
         file_put_contents($new_file, $file_data);
-        
+
         // Set correct file permissions
         $stat = stat( dirname( $new_file ));
         $perms = $stat['mode'] & 0000666;
         @chmod( $new_file, $perms );
-        
+
         // get the file type. Must to use it as a post thumbnail.
         $wp_filetype = wp_check_filetype( $filename, $mimes );
-        
+
         extract( $wp_filetype );
-        
+
         // no file type! No point to proceed further
         if ( ( !$type || !$ext ) && !current_user_can( 'unfiltered_upload' ) ) {
             return null;
         }
-        
+
         // construct the attachment array
         $attachment = array(
             'post_mime_type' => $type,
-            'guid' => $uploads['url'] . "/$filename",
-            'post_parent' => null,
-            'post_title' => '',
-            'post_content' => '',
+            'guid'           => $uploads['url'] . "/$filename",
+            'post_parent'    => null,
+            'post_title'     => '',
+            'post_content'   => '',
         );
-    
+
         // insert attachment
         $thumb_id = wp_insert_attachment($attachment, $file, $post_id);
-        
+
         // error!
         if ( is_wp_error($thumb_id) ) {
             return null;
         }
-        
+
         require_once(ABSPATH . '/wp-admin/includes/image.php');
         wp_update_attachment_metadata( $thumb_id, wp_generate_attachment_metadata( $thumb_id, $new_file ) );
-        
+
         return $thumb_id;
     }
-    
+
     /**
      * Function to fetch the contents of URL using curl in absense of allow_url_fopen.
-     * 
+     *
      * Copied from user comment on php.net (http://in.php.net/manual/en/function.file-get-contents.php#82255)
      */
     static function curl_get_file_contents($URL) {
@@ -619,11 +619,11 @@ class Woo_WPEC_Converter extends WP_Importer {
         curl_setopt($c, CURLOPT_URL, $URL);
         $contents = curl_exec($c);
         curl_close($c);
-    
+
         if ($contents) {
             return $contents;
         }
-        
+
         return FALSE;
     }
 
@@ -885,4 +885,3 @@ function woo_wpec_importer_init() {
 
 }
 add_action( 'admin_init', 'woo_wpec_importer_init' );
-
