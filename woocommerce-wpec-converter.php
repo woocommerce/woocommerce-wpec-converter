@@ -13,8 +13,9 @@ License: GPL version 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2
 /**
  * Required functions
  */
-if ( ! function_exists( 'woothemes_queue_update' ) )
+if ( ! function_exists( 'woothemes_queue_update' ) ) {
 	require_once( 'woo-includes/woo-functions.php' );
+}
 
 /**
  * Plugin updates
@@ -24,23 +25,26 @@ woothemes_queue_update( plugin_basename( __FILE__ ), '25fd8a5bcfc78fde45cdfaebfa
 /**
  * Check if WooCommerce is active
  **/
-if ( ! is_woocommerce_active() )
+if ( ! is_woocommerce_active() ) {
 	return;
+}
 
 if ( ! defined( 'WP_LOAD_IMPORTERS' ) )
 	return;
 
 /** Display verbose errors */
-if ( ! defined( 'IMPORT_DEBUG' ) )
+if ( ! defined( 'IMPORT_DEBUG' ) ) {
 	define( 'IMPORT_DEBUG', false );
+}
 
 // Load Importer API
 require_once ABSPATH . 'wp-admin/includes/import.php';
 
 if ( ! class_exists( 'WP_Importer' ) ) {
 	$class_wp_importer = ABSPATH . 'wp-admin/includes/class-wp-importer.php';
-	if ( file_exists( $class_wp_importer ) )
+	if ( file_exists( $class_wp_importer ) ) {
 		require $class_wp_importer;
+	}
 }
 
 /**
@@ -257,37 +261,42 @@ class Woo_WPEC_Converter extends WP_Importer {
 		$this->results = 0;
 
 		$timeout = 600;
-		if( !ini_get( 'safe_mode' ) )
+		if( !ini_get( 'safe_mode' ) ) {
 			set_time_limit( $timeout );
+		}
 
 		global $wpdb;
 
 		// weight unit in WPEC = pound, ounce, gram, kilogram
 		// weight unit in WC = lbs, kg
 		$weight_unit = get_option( 'woocommerce_weight_unit' );
-		if ( $weight_unit ) $weight_unit = 'kg';
+		if ( $weight_unit ) {
+			$weight_unit = 'kg';
+		}
 
 		// dimension unit in WPEC = in, cm, meter
 		// weight unit in WC = in, cm
 		$dimension_unit = get_option( 'woocommerce_dimension_unit' );
-		if ( $dimension_unit ) $dimension_unit = 'cm';
+		if ( $dimension_unit ) {
+			$dimension_unit = 'cm';
+		}
 
-		$count = $wpdb->get_var("SELECT count(*) FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent = '0'");
+		$count = $wpdb->get_var( "SELECT count(*) FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent = '0'" );
 
 		if ( $count ) {
 
-			$products = $wpdb->get_results("SELECT ID,post_title FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent = '0'");
+			$products = $wpdb->get_results( "SELECT ID,post_title FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent = '0'" );
 
 			foreach ( $products as $product ) {
 
 				$id = $product->ID;
 				$title = $product->post_title;
 
-				$meta = get_post_custom($product->ID);
-				$meta_data = unserialize($meta['_wpsc_product_metadata'][0]);
+				$meta = get_post_custom( $product->ID );
+				$meta_data = unserialize( $meta['_wpsc_product_metadata'][0] );
 
 				// product_url (external)
-				if (!empty($meta_data['external_link'])) {
+				if ( ! empty( $meta_data['external_link'] ) ) {
 					update_post_meta( $id, 'product_url', $meta_data['external_link'] );
 					$product_type = 'external';
 				}
@@ -299,19 +308,19 @@ class Woo_WPEC_Converter extends WP_Importer {
 				wp_set_object_terms($id, $product_type, 'product_type');
 
 				// regular_price
-				if ( isset($meta['_wpsc_price'][0]) ) {
+				if ( isset( $meta['_wpsc_price'][0] ) ) {
 					update_post_meta( $id, '_regular_price', wc_format_decimal( $meta['_wpsc_price'][0] ) );
 					delete_post_meta( $id, '_wpsc_price' );
 				}
 
 				// sale_price
-				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
+				if ( isset( $meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0  ) {
 					update_post_meta( $id, '_sale_price', wc_format_decimal( $meta['_wpsc_special_price'][0] ) );
 					delete_post_meta( $id, '_wpsc_special_price' );
 				}
 
 				// price (regular_price/sale_price)
-				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
+				if ( isset( $meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0  ) {
 					update_post_meta( $id, '_price', wc_format_decimal( $meta['_wpsc_special_price'][0] ) );
 				}
 				else {
@@ -329,8 +338,9 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 				// featured: yes / no
 				$featured_ids = get_option( 'sticky_products' );
-				if ( !is_array($featured_ids) )
-					$featured_ids = array($featured_ids);
+				if ( ! is_array( $featured_ids ) ) {
+					$featured_ids = array( $featured_ids );
+				}
 				$featured = ( in_array( $id, $featured_ids ) ) ? 'yes' : 'no';
 				update_post_meta( $id, '_featured', $featured );
 
@@ -344,7 +354,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				// manage_stock : yes / no
 				// stock : external = 0
 				// backorders : no
-				if ( isset($meta['_wpsc_stock'][0]) ) {
+				if ( isset( $meta['_wpsc_stock'][0] ) ) {
 					if ( $meta['_wpsc_stock'][0] === '' ) {
 						update_post_meta( $id, '_stock_status', 'instock' );
 						update_post_meta( $id, '_manage_stock', 'no' );
@@ -421,8 +431,8 @@ class Woo_WPEC_Converter extends WP_Importer {
 				update_post_meta( $id, '_tax_class', '' );
 
 				// per_product_shipping
-				if ( $product_type == 'simple' || $product_type == 'variable' ) {
-					if ( isset($meta_data['shipping']['local']) && $meta_data['shipping']['local'] ) {
+				if ( 'simple' == $product_type || 'variable' == $product_type ) {
+					if ( isset( $meta_data['shipping']['local'] ) && $meta_data['shipping']['local'] ) {
 						update_post_meta( $id, 'per_product_shipping', $meta_data['shipping']['local'] );
 					}
 				}
@@ -450,27 +460,27 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 		global $wpdb;
 
-		$post = get_post($dummy_wp = $post_id);
+		$post = get_post( $dummy_wp = $post_id );
 
 		// reset post parent id
 		$post_parent_id = $post->post_parent === 0 ? $post->ID : $post->post_parent;
 
 		// check whether Post Thumbnail is already set for this post.
-		if ( has_post_thumbnail($post_parent_id) ) return "has thumbnail";
+		if ( has_post_thumbnail( $post_parent_id ) ) return "has thumbnail";
 
 		// case 1: there is an image attachment we can use
 		// found all images attachments from the post
-		$attachments = array_values(get_children(array(
+		$attachments = array_values( get_children( array(
 			'post_parent'    => $post_parent_id,
 			'post_status'    => 'inherit',
 			'post_type'      => 'attachment',
 			'post_mime_type' => 'image',
 			'order'          => 'ASC',
-			'orderby'        => 'menu_order ID')
+			'orderby'        => 'menu_order ID' )
 		));
 
 		// if attachment found, set the first attachment as thumbnail
-		if( sizeof($attachments) > 0 ) {
+		if( sizeof( $attachments ) > 0 ) {
 			update_post_meta( $post_parent_id, '_thumbnail_id', $attachments[0]->ID );
 		return;
 		}
@@ -478,16 +488,16 @@ class Woo_WPEC_Converter extends WP_Importer {
 		// case 2: need to search for an image from content
 		// find image from content
 		// check is there any image we can use
-		$image_url = self::found_image_url($post->post_content);
+		$image_url = self::found_image_url( $post->post_content );
 
 		// if no url found, do nothing
 		if( $image_url == null ) return;
 
 		// try to create an image attchment from given image url, and use it as thumbnail
-		$post_thumbnail_id = self::create_post_attachment_from_url($image_url);
+		$post_thumbnail_id = self::create_post_attachment_from_url( $image_url );
 
 		// update post thumbnail meta if thumbnail found
-		if(is_int($post_thumbnail_id)) {
+		if( is_int( $post_thumbnail_id ) ) {
 			update_post_meta( $post_parent_id, '_thumbnail_id', $post_thumbnail_id );
 		}
 
@@ -499,7 +509,7 @@ class Woo_WPEC_Converter extends WP_Importer {
      * @return String if image url if external image is used.
      * @return NULL if fail
      */
-    static function found_image_url($html)
+    static function found_image_url( $html )
     {
         $matches = array();
 
@@ -540,13 +550,15 @@ class Woo_WPEC_Converter extends WP_Importer {
      * Function to fetch the image from URL and generate the required thumbnails
      * @return Attachment ID
      */
-    static function create_post_attachment_from_url($imageUrl = null)
+    static function create_post_attachment_from_url( $imageUrl = null )
     {
-        if(is_null($imageUrl)) return null;
+        if ( is_null( $imageUrl ) ) {
+			return null;
+		}
 
         // get file name
-        $filename = substr($imageUrl, (strrpos($imageUrl, '/'))+1);
-        if (!(($uploads = wp_upload_dir(current_time('mysql')) ) && false === $uploads['error'])) {
+        $filename = substr( $imageUrl, ( strrpos( $imageUrl, '/' ) ) +1 );
+        if ( ! ( ( $uploads = wp_upload_dir( current_time( 'mysql' ) ) ) && false === $uploads['error'] ) ) {
             return null;
         }
 
@@ -557,18 +569,18 @@ class Woo_WPEC_Converter extends WP_Importer {
         $new_file = $uploads['path'] . "/$filename";
 
         // download file
-        if (!ini_get('allow_url_fopen')) {
+        if ( ! ini_get( 'allow_url_fopen' ) ) {
             $file_data = self::curl_get_file_contents($imageUrl);
         } else {
             $file_data = @file_get_contents($imageUrl);
         }
 
         // fail to download image.
-        if (!$file_data) {
+        if ( ! $file_data ) {
             return null;
         }
 
-        file_put_contents($new_file, $file_data);
+        file_put_contents( $new_file, $file_data );
 
         // Set correct file permissions
         $stat = stat( dirname( $new_file ));
@@ -598,11 +610,11 @@ class Woo_WPEC_Converter extends WP_Importer {
         $thumb_id = wp_insert_attachment($attachment, $file, $post_id);
 
         // error!
-        if ( is_wp_error($thumb_id) ) {
+        if ( is_wp_error( $thumb_id ) ) {
             return null;
         }
 
-        require_once(ABSPATH . '/wp-admin/includes/image.php');
+        require_once( ABSPATH . '/wp-admin/includes/image.php' );
         wp_update_attachment_metadata( $thumb_id, wp_generate_attachment_metadata( $thumb_id, $new_file ) );
 
         return $thumb_id;
@@ -613,12 +625,12 @@ class Woo_WPEC_Converter extends WP_Importer {
      *
      * Copied from user comment on php.net (http://in.php.net/manual/en/function.file-get-contents.php#82255)
      */
-    static function curl_get_file_contents($URL) {
+    static function curl_get_file_contents( $URL ) {
         $c = curl_init();
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($c, CURLOPT_URL, $URL);
-        $contents = curl_exec($c);
-        curl_close($c);
+        curl_setopt( $c, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $c, CURLOPT_URL, $URL );
+        $contents = curl_exec( $c );
+        curl_close( $c );
 
         if ($contents) {
             return $contents;
@@ -633,26 +645,31 @@ class Woo_WPEC_Converter extends WP_Importer {
 		$this->results = 0;
 
 		$timeout = 600;
-		if( !ini_get( 'safe_mode' ) )
+		if( !ini_get( 'safe_mode' ) ) {
 			set_time_limit( $timeout );
+		}
 
 		global $wpdb, $woocommerce;
 
 		// weight unit in WPEC = pound, ounce, gram, kilogram
 		// weight unit in WC = lbs, kg
 		$weight_unit = get_option( 'woocommerce_weight_unit' );
-		if ( $weight_unit ) $weight_unit = 'kg';
+		if ( $weight_unit ) {
+			$weight_unit = 'kg';
+		}
 
 		// dimension unit in WPEC = in, cm, meter
 		// weight unit in WC = in, cm
 		$dimension_unit = get_option( 'woocommerce_dimension_unit' );
-		if ( $dimension_unit ) $dimension_unit = 'cm';
+		if ( $dimension_unit ) {
+			$dimension_unit = 'cm';
+		}
 
-		$count = $wpdb->get_var("SELECT count(*) FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent != '0'");
+		$count = $wpdb->get_var( "SELECT count(*) FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent != '0'" );
 
 		if ( $count ) {
 
-			$variations = $wpdb->get_results("SELECT ID,post_parent FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent != '0'");
+			$variations = $wpdb->get_results( "SELECT ID,post_parent FROM $wpdb->posts WHERE post_type = 'wpsc-product' AND post_parent != '0'" );
 
 			foreach ( $variations as $variation ) {
 
@@ -660,8 +677,8 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 				$id = $variation->ID;
 
-				$meta = get_post_custom($variation->ID);
-				$meta_data = unserialize($meta['_wpsc_product_metadata'][0]);
+				$meta = get_post_custom( $variation->ID );
+				$meta_data = unserialize( $meta['_wpsc_product_metadata'][0] );
 
 				// update attributes
 
@@ -672,27 +689,27 @@ class Woo_WPEC_Converter extends WP_Importer {
 				}
 
 				// sale_price
-				if ( isset($meta['_wpsc_special_price'][0]) && $meta['_wpsc_special_price'][0]>0 ) {
+				if ( isset( $meta['_wpsc_special_price'][0] ) && $meta['_wpsc_special_price'][0]>0 ) {
 					update_post_meta( $id, '_sale_price', $meta['_wpsc_special_price'][0] );
 					delete_post_meta( $id, '_wpsc_special_price' );
 				}
 
 				// weight
-				if ( isset($meta_data['weight']) && $meta_data['weight'] ) {
-					$old_weight = $meta_data['weight'];
+				if ( isset( $meta_data['weight'] ) && $meta_data['weight'] ) {
+					$old_weight      = $meta_data['weight'];
 					$old_weight_unit = $meta_data['weight_unit'];
-					$new_weight = $this->convert_weight($old_weight, $old_weight_unit, $weight_unit);
+					$new_weight      = $this->convert_weight( $old_weight, $old_weight_unit, $weight_unit );
 					update_post_meta( $id, '_weight', $new_weight );
 				}
 
 				// stock
-				if ( isset($meta['_wpsc_stock'][0]) ) {
+				if ( isset( $meta['_wpsc_stock'][0] ) ) {
 					update_post_meta( $id, '_stock', $meta['_wpsc_stock'][0] );
 					delete_post_meta( $id, '_wpsc_stock' );
 				}
 
 				// sku
-				if ( isset($meta['_wpsc_sku'][0]) ) {
+				if ( isset( $meta['_wpsc_sku'][0] ) ) {
 					update_post_meta( $id, '_sku', $meta['_wpsc_sku'][0] );
 					delete_post_meta( $id, '_wpsc_sku' );
 				}
@@ -710,7 +727,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 				update_post_meta( $id, '_file_path', '' );
 
 				// get product attributes in array
-				$attribute_taxonomies = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."woocommerce_attribute_taxonomies;");
+				$attribute_taxonomies = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_attribute_taxonomies;" );
 				$attributes_name = array();
 				if ( $attribute_taxonomies ) {
 					foreach ($attribute_taxonomies as $tax) {
@@ -744,18 +761,18 @@ class Woo_WPEC_Converter extends WP_Importer {
 				}
 
 				$sku_string = '#'.$id;
-				if ( isset($meta['_wpsc_sku'][0]) && $meta['_wpsc_sku'][0] )
+				if ( isset($meta['_wpsc_sku'][0]) && $meta['_wpsc_sku'][0] ) {
 					$sku_string .= ' SKU: ' . $meta['_wpsc_sku'][0];
+				}
 
 				$title = '#' . $parent_id . ' Variation ('.$sku_string.') - ' . implode(', ', $title);
 
 				// get parent product type.
 				$parent_type_terms = wp_get_object_terms( $parent_id, 'product_type' );
-				if (!is_wp_error($parent_type_terms) && $parent_type_terms) {
-					$parent_type_term = current($parent_type_terms);
+				if ( ! is_wp_error( $parent_type_terms ) && $parent_type_terms ) {
+					$parent_type_term = current( $parent_type_terms );
 					$product_type = $parent_type_term->slug;
-				}
-				else {
+				} else {
 					$product_type = 'simple';
 				}
 
@@ -791,7 +808,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 				// convert post type and mark it converted
 				$converted = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_type = 'product_variation', post_title = '%s', post_status = 'publish' WHERE ID = %d", $title, $id ) );
-				if ( !is_wp_error($converted) ) {
+				if ( ! is_wp_error( $converted ) ) {
 					$this->results++;
 					printf( '<p>'.__('<b>%s</b> product variation was converted', 'woo_wpec').'</p>', $title );
 				}
@@ -804,8 +821,8 @@ class Woo_WPEC_Converter extends WP_Importer {
 
 	// Based on wpsc_convert_weight function in WP E-Commerce plugin.
 	// Credits: GetShopped.org
-	function convert_weight($in_weight, $in_unit, $out_unit = 'kg', $raw = false) {
-		switch($in_unit) {
+	function convert_weight( $in_weight, $in_unit, $out_unit = 'kg', $raw = false ) {
+		switch( $in_unit ) {
 			case "kilogram":
 			$intermediate_weight = $in_weight * 1000;
 			break;
@@ -824,7 +841,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 			$intermediate_weight = $in_weight * 453.59237;
 			break;
 		}
-		switch($out_unit) {
+		switch( $out_unit ) {
 			case "kg":
 			$weight = $intermediate_weight / 1000;
 			break;
@@ -834,13 +851,14 @@ class Woo_WPEC_Converter extends WP_Importer {
 			$weight = $intermediate_weight / 453.59237;
 			break;
 		}
-		if($raw)
+		if( $raw ) {
 			return $weight;
+		}
 		return round($weight, 2);
 	}
 
-	function convert_dimension($in_dimension, $in_unit, $out_unit = 'cm', $raw = false) {
-		switch($in_unit) {
+	function convert_dimension( $in_dimension, $in_unit, $out_unit = 'cm', $raw = false ) {
+		switch( $in_unit ) {
 			case "in":
 			$intermediate_dimension = $in_dimension / 0.393700787402;
 			break;
@@ -854,7 +872,7 @@ class Woo_WPEC_Converter extends WP_Importer {
 			$intermediate_dimension = $in_dimension;
 			break;
 		}
-		switch($out_unit) {
+		switch( $out_unit ) {
 			case "in":
 			$dimension = $in_dimension * 0.393700787402;
 			break;
@@ -864,8 +882,9 @@ class Woo_WPEC_Converter extends WP_Importer {
 			$dimension = $in_dimension;
 			break;
 		}
-		if($raw)
+		if( $raw ) {
 			return $dimension;
+		}
 		return round($dimension, 2);
 	}
 
